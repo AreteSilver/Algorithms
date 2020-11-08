@@ -1,0 +1,102 @@
+#include <iostream>
+#include <time.h>
+#include<cstdlib>
+
+
+
+using namespace std;
+
+char letters[] = { 'b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','r','s' };
+
+struct typ_strukturalny
+{
+	int x;
+	float f;
+	char c;
+};
+
+typ_strukturalny * losowanie(int n)
+{
+	typ_strukturalny* wsk = nullptr;
+	wsk = new typ_strukturalny[n];
+
+	for (int i = 0; i < n; i++)
+	{
+		wsk[i].x = rand() % 10000 - 1000;
+		wsk[i].f = 1000 + i;
+		wsk[i].c = letters[rand() % 17];
+	}
+
+	return wsk;
+}
+
+void kasowanie(typ_strukturalny* wsk, int size)
+{
+	delete[] wsk;
+	wsk = nullptr;
+}
+
+void sortowanie(typ_strukturalny * wsk, int size)
+{
+	bool swapped; int i = 0; int j = 0;
+	for (i = 0; i < size; i++) {
+		bool swapped = false;
+		for (j = 1; j < size - i; j++)
+		{
+			if (wsk[j - 1].x > wsk[j].x)
+				swap(wsk[j - 1], wsk[j]);
+			swapped = true;
+		}
+		if (swapped == false)
+			break;
+	}
+}
+
+int zliczanie_znakow(typ_strukturalny *wsk, int size, char let)
+{
+	int counter = 0;
+	for (int i = 0; i < size; i++)
+	{
+		if (wsk[i].c == let)
+		{
+			counter++;
+		}
+	}
+	return counter;
+}
+
+int main()
+{
+	int N;
+	char X;
+	clock_t begin,end;
+	double time_spent;
+	begin = clock();
+
+	FILE* fp = fopen("inlab.txt", "r");
+	if (fp == NULL)
+		return -1;
+	fscanf(fp, "%d %c", &N, &X);
+	fclose(fp);
+
+	srand(time(NULL));
+
+	typ_strukturalny * p1 =  losowanie(N);
+	sortowanie(p1, N);
+	int w = zliczanie_znakow(p1, N, X);
+
+	for (int i = 0; i < 20; i++)
+		cout << p1[i].x << " ";
+
+	cout << endl << w << endl;
+
+	kasowanie(p1, N);
+
+
+	end = clock();
+	time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+
+	cout << time_spent;
+
+	return 0;
+}
