@@ -1,5 +1,6 @@
 #include <iostream>
 #include <ctime>
+#include <cstdlib>
 
 using namespace std;
 
@@ -104,7 +105,7 @@ public:
 			}
 			q = q->next;
 		}
-		cout << "Element nie znajduje sie na liscie" << endl;
+		cout << "Element nie znajduje sie na liscie: "<< key << endl;
 		return 0;
 	}
 
@@ -127,6 +128,7 @@ public:
 			before->next = q->next;
 			delete q;
 			inf.counter--;
+			return;
 		}
 	}
 
@@ -164,6 +166,7 @@ public:
 				number--;
 			}
 		}
+		cout << endl;
 	}
 
 	void showLast(int number)
@@ -186,8 +189,7 @@ public:
 				q = q->next;
 			}
 		}
-
-		
+		cout << endl;
 	}
 
 	int getCounter()
@@ -197,7 +199,7 @@ public:
 
 	void showCounter()
 	{
-		cout << getCounter() << endl;
+		cout << "Liczba wezow w liscie: " << getCounter() << endl;
 	}
 
 	void clear()
@@ -232,11 +234,58 @@ private:
 
 int main()
 {
+	int X;
+	int k1, k2, k3, k4, k5;
+	clock_t begin, end;
+	double time_spent;
+	#pragma warning(disable : 4996)
+	FILE* fp = fopen("inlab02.txt", "r"); 
+	if (fp == NULL)
+	{
+		return -1;
+	}
+	fscanf(fp, "%d %d %d %d %d %d", &X, &k1, &k2, &k3, &k4, &k5); 
+	fclose(fp);
+
 	srand(time(NULL));
-	List a1; a1.remove(5);
-	a1.showLast(10);
+
+	begin = clock();
+
+	List a1;
+
+	a1.search(k1);
+	a1.insertQuantity(X);
+	a1.showCounter();
+	a1.showFirst(20);
+
+	a1.insert(k2);
+	a1.showFirst(20);
+
+	a1.insert(k3);
+	a1.showFirst(20);
+
+	a1.insert(k4);
+	a1.showFirst(20);
+
+	a1.insert(k5);
+	a1.remove(k3);
+	a1.showFirst(20);
+
+	a1.remove(k2);
+	a1.showFirst(20);
+
+	a1.remove(k5);
+	a1.showCounter();
+
+	a1.search(k5);
+	a1.showLast(11);
+	a1.showCounter();
+
 	a1.clear();
-	a1.showLast(10);
-	cout << a1.getCounter();
+
+	end = clock();
+	time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+	cout << time_spent << endl;
+
 	return 0;
 }
