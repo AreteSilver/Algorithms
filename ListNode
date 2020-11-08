@@ -3,25 +3,31 @@
 
 using namespace std;
 
-typedef struct
+typedef struct ListNode
 {
 	int key;
 	char character;
 	double number;
 	ListNode *next;
-}ListNode;
+};
 
 class List
 {
 public:
 
-	void insert(int key)
+	List()
+	{
+		inf.head = inf.tail = NULL;
+		inf.counter = 0;
+	}
+
+	void insert(int key, int quantityMode = false)
 	{
 		ListNode* q = new ListNode;
-
+		q->key = key;
 		q->character = 'T';
 		q->number = rand() % 100;
-
+		inf.counter++;
 		if (inf.head == NULL)
 		{
 			inf.head = inf.tail = q;
@@ -30,15 +36,19 @@ public:
 		else
 		{
 			ListNode* before = NULL, * after = inf.head;
-			while(true)
+			while(after != NULL)
 			{
 				if (after->key == key)
 				{
-					cout << "Klucz o podanej nazwie już znajduje się w liście." << endl;
+					if (quantityMode == false) 
+					{
+						cout << "Klucz o podanej wartosci znajduje sie juz w liscie." << endl;
+					}
+					inf.counter--;
 					return;
 				}
 
-				if (after->key > key)
+				if (after->key >= key)
 					break;
 				else
 				{
@@ -70,12 +80,14 @@ public:
 
 	void insertQuantity(int number)
 	{
-		for (int i = 0; i < number; i++)
+		int meta_cnt = getCounter() + number;
+		while(meta_cnt != getCounter())
 		{
-			int random = rand() % 99990 + 99;
-			insertQuantity(random);
+			int random = (rand() * rand()) % 99900 + 99;
+			insert(random, true);
 		}
 	}
+
 
 	int search(int key)
 	{
@@ -84,14 +96,14 @@ public:
 		{
 			if (q->key == key)
 			{
-				cout << "Element znajduje się na liście" << endl;
+				cout << "Element znajduje sie na liscie" << endl;
 				return 1;
 			}
 			else
 			{
 				q = q->next;
 			}
-			cout << "Element nie znajduje się na liście" << endl;
+			cout << "Element nie znajduje sie na liscie" << endl;
 			return 0;
 
 		}
@@ -103,26 +115,71 @@ public:
 		if (search(key))
 		{
 			ListNode* q = inf.head;
-			while (q->key != key)
+			while ((q->next)->key != key)
 			{
 				q = q->next;
-				if (q->key == key)
-				{
-					
-				}
-				else
-				{
-					q = q->next;
-				}
+			}
+			q->next = (q->next)->next;
+		}
+		else
+		{
+			cout << "Lista nie zawiera elementu o podanej wartosci" << endl;
+		}
+	}
+
+	void show()
+	{
+		ListNode* q = inf.head;
+		if (inf.head == NULL)
+		{
+			cout << "Lista jest pusta." << endl;
+		}
+		else
+		{
+			while(q != NULL)
+			{
+				cout << q->key << " " << q->character << " " << q->number << endl;
+				q = q->next;
 			}
 		}
 	}
 
-	void showFirst(int number);
+	void showFirst(int number)
+	{
+		int counter = number;
+		ListNode* q = inf.head;
+		if (inf.head == NULL)
+		{
+			cout << "Lista jest pusta." << endl;
+		}
+		else
+		{
+			while (q != NULL && number)
+			{
+				cout << q->key << " " << q->character << " " << q->number << endl;
+				q = q->next;
+				number--;
+			}
+		}
+	}
 
 	void showLast(int number);
 
-	void getCounter();
+	int getCounter()
+	{
+		return inf.counter;
+	}
+	/*int getCounter()
+	{
+		int cnt = 0;
+		ListNode* q = inf.head;
+		while (q != NULL)
+		{
+			cnt++;
+			q = q->next;
+		}
+		return cnt;
+	}*/
 
 	void clear();
 
@@ -131,6 +188,7 @@ private:
 	{
 		ListNode* head;
 		ListNode* tail;
+		int counter;
 	}Info;
 
 	Info inf;
@@ -140,5 +198,11 @@ private:
 int main()
 {
 	srand(time(NULL));
+	List a1;
+	a1.insertQuantity(10094);
+	a1.insert(11);
+	a1.insert(11);
+	a1.showFirst(10000);
+	cout << a1.getCounter();
 	return 0;
 }
