@@ -89,41 +89,44 @@ public:
 	}
 
 
-	int search(int key)
+	int search(int key, bool removeMode = false)
 	{
 		ListNode* q = inf.head;
 		while (q != NULL)
 		{
 			if (q->key == key)
 			{
-				cout << "Element znajduje sie na liscie" << endl;
+				if (removeMode == false)
+				{
+					cout << "Element znajduje sie na liscie" << endl;
+				}
 				return 1;
 			}
-			else
-			{
-				q = q->next;
-			}
-			cout << "Element nie znajduje sie na liscie" << endl;
-			return 0;
-
+			q = q->next;
 		}
-
+		cout << "Element nie znajduje sie na liscie" << endl;
+		return 0;
 	}
 
 	void remove(int key)
 	{
-		if (search(key))
-		{
-			ListNode* q = inf.head;
-			while ((q->next)->key != key)
+		ListNode* q = inf.head, * before = NULL;
+		while (search(key, true)) {
+			if (q->key == key)
 			{
+				inf.head = q->next;
+				delete q;
+				inf.counter--;
+				return;
+			}
+			while (q->key != key)
+			{
+				before = q;
 				q = q->next;
 			}
-			q->next = (q->next)->next;
-		}
-		else
-		{
-			cout << "Lista nie zawiera elementu o podanej wartosci" << endl;
+			before->next = q->next;
+			delete q;
+			inf.counter--;
 		}
 	}
 
@@ -163,25 +166,57 @@ public:
 		}
 	}
 
-	void showLast(int number);
+	void showLast(int number)
+	{
+		int meta_counter = getCounter() - number;
+		ListNode* q = inf.head;
+		if (inf.head == NULL)
+		{
+			cout << "Lista jest pusta." << endl;
+		}
+		else
+		{
+			for (int i = 0; i < meta_counter; i++)
+			{
+				q = q->next;
+			}
+			while (q != 0)
+			{
+				cout << q->key << " " << q->character << " " << q->number << endl;
+				q = q->next;
+			}
+		}
+
+		
+	}
 
 	int getCounter()
 	{
 		return inf.counter;
 	}
-	/*int getCounter()
-	{
-		int cnt = 0;
-		ListNode* q = inf.head;
-		while (q != NULL)
-		{
-			cnt++;
-			q = q->next;
-		}
-		return cnt;
-	}*/
 
-	void clear();
+	void showCounter()
+	{
+		cout << getCounter() << endl;
+	}
+
+	void clear()
+	{
+		ListNode* q = inf.head, * after;
+		if (inf.head == NULL)
+		{
+			cout << "Lista jest pusta." << endl;
+		}
+		else
+		{
+			while(q != 0)
+			{
+				after = q->next;
+				remove(q->key);
+				q = after;
+			}
+		}
+	}
 
 private:
 	typedef struct
@@ -198,11 +233,10 @@ private:
 int main()
 {
 	srand(time(NULL));
-	List a1;
-	a1.insertQuantity(10094);
-	a1.insert(11);
-	a1.insert(11);
-	a1.showFirst(10000);
+	List a1; a1.remove(5);
+	a1.showLast(10);
+	a1.clear();
+	a1.showLast(10);
 	cout << a1.getCounter();
 	return 0;
 }
