@@ -1,0 +1,144 @@
+#include <iostream>
+#include <ctime>
+
+using namespace std;
+
+typedef struct
+{
+	int key;
+	char character;
+	double number;
+	ListNode *next;
+}ListNode;
+
+class List
+{
+public:
+
+	void insert(int key)
+	{
+		ListNode* q = new ListNode;
+
+		q->character = 'T';
+		q->number = rand() % 100;
+
+		if (inf.head == NULL)
+		{
+			inf.head = inf.tail = q;
+			q->next = NULL;
+		}
+		else
+		{
+			ListNode* before = NULL, * after = inf.head;
+			while(true)
+			{
+				if (after->key == key)
+				{
+					cout << "Klucz o podanej nazwie już znajduje się w liście." << endl;
+					return;
+				}
+
+				if (after->key > key)
+					break;
+				else
+				{
+					before = after;
+					after = after->next;
+				}
+			}
+			if (before == NULL)
+			{
+				inf.head = q;
+				q->next = after;
+			}
+			else
+			{
+				if (after == NULL)
+				{
+					inf.tail->next = q;
+					q->next = NULL;
+					inf.tail = q;
+				}
+				else
+				{
+					before->next = q;
+					q->next = after;
+				}
+			}
+		}
+	}
+
+	void insertQuantity(int number)
+	{
+		for (int i = 0; i < number; i++)
+		{
+			int random = rand() % 99990 + 99;
+			insertQuantity(random);
+		}
+	}
+
+	int search(int key)
+	{
+		ListNode* q = inf.head;
+		while (q != NULL)
+		{
+			if (q->key == key)
+			{
+				cout << "Element znajduje się na liście" << endl;
+				return 1;
+			}
+			else
+			{
+				q = q->next;
+			}
+			cout << "Element nie znajduje się na liście" << endl;
+			return 0;
+
+		}
+
+	}
+
+	void remove(int key)
+	{
+		if (search(key))
+		{
+			ListNode* q = inf.head;
+			while (q->key != key)
+			{
+				q = q->next;
+				if (q->key == key)
+				{
+					
+				}
+				else
+				{
+					q = q->next;
+				}
+			}
+		}
+	}
+
+	void showFirst(int number);
+
+	void showLast(int number);
+
+	void getCounter();
+
+	void clear();
+
+private:
+	typedef struct
+	{
+		ListNode* head;
+		ListNode* tail;
+	}Info;
+
+	Info inf;
+	
+};
+
+int main()
+{
+	srand(time(NULL));
+	return 0;
+}
