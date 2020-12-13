@@ -1,0 +1,125 @@
+#include <iostream>
+#include <stdio.h> 
+
+using namespace std;
+
+struct Node {
+	int key;
+	Node* left;
+	Node* right;
+	Node* parent;
+};
+
+Node* createNode(int key)
+{
+	Node* node = new Node;
+	node->key = key;
+	node->left = NULL;
+	node->right = NULL;
+	node->parent = NULL;
+	return node;
+}
+
+void insert(Node* root, int key)
+{
+	Node* node = createNode(key);
+	Node* current_parent = NULL;
+	Node* current = root;
+
+	while (current != NULL)
+	{
+		current_parent = current;
+		if (key < current->key)
+			current = current->left;
+		else
+			current = current->right;
+	}
+	node->parent = current_parent;
+	
+	if (current_parent == NULL)
+		return;
+	else if (node->key < current_parent->key)
+		current_parent->left = node;
+	else
+		current_parent->right = node;
+	
+}
+
+Node* search(Node* root, int key)
+{
+	if (root == NULL || root->key == key)
+		return root;
+	else if (key < root->key) 
+		return search(root->left, key);
+	else 
+		return search(root->right, key);
+}
+
+void print(Node *root, int key)
+{
+	if (search(root, key))
+		cout << "Istnieje\n";
+	else
+		cout << "Nie istnieje\n";
+}
+
+int FindMin(Node* root)
+{
+	Node* current = root;
+	if (current->left == NULL)
+	{
+		return -1;
+	}
+	while (current->left != NULL)
+	{
+		current = current->left;
+	}
+	return current->key;
+}
+int  FindMax(Node* root)
+{
+	Node* current = root;
+	if (current->right == NULL)
+	{
+		return NULL;
+	}
+	while (current->right != NULL)
+	{
+		current = current->right;
+	}
+	return current->key;
+}
+
+void inorder_tree_walk(Node* root)
+{
+	Node* current = root;
+	if (current != NULL)
+	{
+		inorder_tree_walk(current->left);
+		cout << current->key << endl;
+		inorder_tree_walk(current->right);
+	}
+}
+
+
+
+int main()
+{
+	Node* root = createNode(10);
+	insert(root, 15);
+	insert(root, 12);
+	insert(root, 5);
+	insert(root, 30);
+	insert(root, 25);
+	insert(root, 35);
+	insert(root, 7);
+	insert(root, -2);
+	insert(root, 33);
+
+	inorder_tree_walk(root);
+	
+
+	
+
+	return 0;
+}
