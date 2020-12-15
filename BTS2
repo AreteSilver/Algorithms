@@ -1,0 +1,221 @@
+#include <iostream>
+
+using namespace std;
+
+struct Node
+{
+	Node* left;
+	Node* right;
+	Node* parent;
+	int key;
+public:
+	Node(int key)
+	{
+		left = right = parent = NULL;
+		this->key = key;
+	}
+};
+
+
+void insert(Node** root, int key)
+{
+	Node* node = new Node(key);
+	
+	Node* current = *root;
+	Node* current_parent = NULL;
+
+	while (current != NULL)
+	{
+		current_parent = current;
+		if (node->key < current->key)
+		{
+			current = current->left;
+		}
+		else
+		{
+			current = current->right;
+		}
+	}
+
+	node->parent = current_parent;
+
+	if (current_parent == NULL)
+	{
+		*root = node;
+	}
+	else if ( node->key < current_parent->key)
+	{
+		current_parent->left = node;
+	}
+	else
+	{
+		current_parent->right = node;
+	}
+
+}
+
+Node* search(Node* root, int key)
+{
+	if (root == NULL || root->key == key)
+	{
+		return root;
+	}
+	if (key < root->key)
+	{
+		return search(root->left, key);
+	}
+	else
+	{
+		return search(root->right, key);
+	}
+}
+
+void inorder(Node* root)
+{
+	if (root != NULL)
+	{
+		inorder(root->left);
+		cout << root->key << endl;
+		inorder(root->right);
+	}
+}
+void swap(Node** root, int x, int y)
+{
+	Node* u = search(*root, x);
+	Node* v = search(*root, y);
+
+	if (u->parent == NULL)
+	{
+		*root = v;
+	}
+	else if (u == u->parent->left)
+	{
+		u->parent->left = v;
+	}
+	else
+	{
+		u->parent->right = v;
+	}
+
+
+}
+
+Node* minimum(Node* root)
+{
+	while (root->left != NULL)
+	{
+		root = root->left;
+	}
+	return root;
+}
+
+void remove(Node** root, int key)
+{
+	Node* node = search(*root, key);
+	if (node->left == NULL)
+	{
+		swap(root, node->key, node->right->key);
+	}
+	else if (node->right == NULL)
+	{
+		swap(root, node->key, node->left->key);
+	}
+	else
+	{
+		Node * y = minimum(node->right);
+		if (y->parent != node)
+		{
+			swap(root, y->key, y->right->key);
+			y->right = node->right;
+			y->right->parent = y;
+		}
+		swap(root, node->key, y->key);
+		y->left = node->left;
+		y->left->parent = y;
+	}
+}
+
+void preorder(Node* root) {
+	if (root != NULL) 
+	{
+		cout << root->key << " ";
+		preorder(root->left);
+		preorder(root->right);
+	}
+}
+
+void to_string(Node* root) {
+	if (root != NULL)
+	{
+		cout << "\n";
+		cout << root->key << " [L: ";
+
+		if (root->left == NULL)
+			cout << "NULL" << " ";
+		else
+			cout << root->left->key << " ";
+
+		cout << "R: ";
+		if (root->right == NULL)
+			cout << "NULL" << " ";
+		else
+			cout << root->right->key<< " ";
+
+		cout << "P: ";
+		if (root->parent == NULL)
+			cout << "NULL" << " ]";
+		else
+			cout << root->parent->key << " ]";
+
+		to_string(root->left);
+		to_string(root->right);
+	}
+}
+
+int findMax(int a, int b) {
+	if (a >= b)
+		return a;
+	else
+		return b;
+}
+
+int findHeight(Node* root) {
+	if (root == NULL)
+		return 0;
+
+	return findMax(findHeight(root->left), findHeight(root->right)) + 1;
+}
+
+void clear(Node** root1, Node* root) 
+{
+	if (root != NULL) 
+	{
+		clear(root1, root->left);
+		clear(root1, root->right);
+		delete root;
+		*root1 = NULL;
+	}
+}
+
+
+
+
+int main()
+{
+
+	Node * root = NULL;
+	insert(&root, 10);
+	insert(&root, 5);
+	insert(&root, 7);
+	insert(&root, 8);
+	insert(&root, 11);
+	insert(&root, 43);
+	insert(&root, 3);
+	clear(&root, root);
+	cout << endl;
+	to_string(root);
+	cout << endl;
+	cout << findHeight(root);
+	
+	return 0;
+}
