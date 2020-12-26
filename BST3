@@ -1,0 +1,282 @@
+#include <iostream>
+#include <ctime>
+#include <time.h>
+
+template<typename T>
+class BST
+{
+
+	struct Node
+	{
+		int key;
+		T data;
+		Node* left;
+		Node* right;
+		Node* parent;
+
+
+	};
+	Node* root;
+	int number_of_nodes;
+
+	void preorder(Node* root)
+	{
+		if (root != NULL)
+		{
+			std::cout << root->key << "\n";
+			preorder(root->left);
+			preorder(root->right);
+		}
+	}
+
+	void inorder(Node* root)
+	{
+		if (root != NULL)
+		{
+			inorder(root->left);
+			std::cout << root->key << "\n";
+			inorder(root->right);
+		}
+	}
+
+	void to_string(Node * root) {
+
+		if (root != NULL)
+		{
+			std::cout << "\n ";
+			std::cout << root->key << " [L: ";
+
+			if (root->left == NULL)
+				std::cout << "NULL" << " ";
+			else
+				std::cout << root->left->key << " ";
+
+			std::cout << "R: ";
+			if (root->right == NULL)
+				std::cout << "NULL" << " ";
+			else
+				std::cout << root->right->key << " ";
+
+			std::cout << "P: ";
+			if (root->parent == NULL)
+				std::cout << "NULL" << "]";
+			else
+				std::cout << root->parent->key << "]";
+
+			to_string(root->left);
+			to_string(root->right);
+		}
+	}
+
+	int findMax(int a, int b) {
+		return (a >= b) ? a : b;
+	}
+
+	int findHeight(Node* root) {
+		if (root == NULL)
+			return 0;
+
+		return findMax(findHeight(root->left), findHeight(root->right)) + 1;
+	}
+
+	void remove_inorder(Node* root)
+	{
+		if (root != NULL)
+		{
+			remove_inorder(root->left);
+			remove(root->key);
+			remove_inorder(root->right);
+		}
+	}
+	
+
+public:
+
+	BST()
+	{
+		root = NULL;
+		number_of_nodes = 0;
+	}
+
+	Node* search(int key)
+	{
+		Node* current = root;
+		while (current != NULL && current->key != key)
+		{
+			if (key < current->key)
+				current = current->left;
+			else
+				current = current->right;
+		}
+		return current;
+	}
+
+	void insert(int key)
+	{
+		number_of_nodes++;
+
+		Node* new_node = new Node;
+		new_node->key = key;
+		new_node->left = new_node->right = new_node->parent = NULL;
+
+		Node* current_parent = NULL;
+		Node* current = root;
+
+		while (current != NULL)
+		{
+			current_parent = current;
+			if (new_node->key < current->key)
+				current = current->left;
+			else
+				current = current->right;
+		}
+
+		new_node->parent = current_parent;
+
+		if (current_parent == NULL)
+			root = new_node;
+		else if (new_node->key < current_parent->key)
+			current_parent->left = new_node;
+		else
+			current_parent->right = new_node;
+	}
+
+	Node* minimum(Node* x)
+	{
+		while (x->left != NULL)
+			x = x->left;
+		return x;
+	}
+
+	Node* maximum(Node* x)
+	{
+		while (x->right != NULL)
+			x = x->right;
+		return x;
+	}
+
+	void transplant(Node* u, Node* v)
+	{
+		if (u->parent == NULL)
+			root = v;
+		else if (u == u->parent->left)
+			u->parent->left = v;
+		else
+			u->parent->right = v;
+		if (v != NULL)
+			v->parent = u->parent;
+	}
+
+	void remove(int key)
+	{
+		number_of_nodes--;
+
+		Node* node = search(key);
+
+		if (node->left == NULL)
+			transplant(node, node->right);
+		else if (node->right == NULL)
+			transplant(node, node->left);
+		else
+		{
+			Node* y = minimum(node->right);
+			if (y->parent != node)
+			{
+				transplant(y, y->right);
+				y->right = node->right;
+				y->right->parent = y;
+			}
+			transplant(node, y);
+			y->left = node->left;
+			y->left->parent = y;
+		}
+	}
+
+	void print_inorder()
+	{
+		std::cout << "Inorder tree walk\n";
+		Node* x = root;
+		inorder(x);
+	}
+
+	void print_preorder()
+	{
+		std::cout << "Preorder tree walk\n";
+		Node* x = root;
+		preorder(x);
+	}
+
+	void display()
+	{
+		Node* x = root;
+		std::cout << "\nDisplay tree: ";
+		std::cout << "\nNodes: " << get_number_of_nodes() << " ";
+		std::cout << "Height: " << get_height() << std::endl;
+		to_string(x);
+	}
+
+	int get_number_of_nodes()
+	{
+		return number_of_nodes;
+	}
+
+	int get_height()
+	{
+		return findHeight(root);
+	}
+
+	void clear()
+	{
+		remove_inorder(root->left);
+		remove_inorder(root->right);
+		root = NULL;
+		number_of_nodes--;
+	}
+
+
+	
+};
+
+
+int main()
+{
+	const int MAX_ORDER = 7;
+
+	BST<int> tree;
+
+	for (int o = 1; o < MAX_ORDER; o++)
+	{
+		const int n = pow(10, o);
+		clock_t t1 = clock();
+		for (int i = 0; i < n; i++)
+		{
+			tree.insert((int) ((-2147483648 + rand() % 4294967295)) / (1 + rand() % (1 + rand() % 11)));
+		}
+		clock_t t2 = clock();
+
+		std::cout << "time to insert 10^" << o << " elements: ";
+		double time_spent = ((double) t2 - (double) t1) / CLOCKS_PER_SEC;
+		std::cout << time_spent << std::endl;
+
+
+	}
+
+	const int m = pow(10, 4);
+	int hits = 0;
+	clock_t t1 = clock();
+	for (int i = 0; i < m; i++)
+	{
+		int sn = (-2147483648 + rand() % 4294967295) / (1 + rand() % (1 + rand() % 11));
+		if (tree.search(sn))
+			hits++;
+	}
+	clock_t t2 = clock();
+	std::cout << "time to search 10^4 elements: ";
+	double time_spent = ((double)t2 - (double)t1) / CLOCKS_PER_SEC;
+	std::cout << time_spent;
+	std::cout << ", hits: " << hits << std::endl;
+
+	
+	return 0;
+
+}
